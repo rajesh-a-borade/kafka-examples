@@ -66,6 +66,12 @@ class KakfkaController {
 		System.out.println("* Sent " + message);
 		return "* Sent " + message;
 	}
+	
+	@GetMapping("/hello")
+	public String hello() {
+		return "hello";
+	}
+	
 }
 
 @Configuration

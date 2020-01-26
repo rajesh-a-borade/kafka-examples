@@ -19,17 +19,19 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 
-
-@SpringBootTest
 @EmbeddedKafka
 @TestInstance(Lifecycle.PER_CLASS)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class KafkaProducerApplicationTests {
 
 	private static final String TOPIC = "domain-events";
@@ -71,4 +73,17 @@ class KafkaProducerApplicationTests {
         System.out.println("*** test passed");
     }
 
+    
+    @LocalServerPort
+	private int port;
+    
+    @Autowired
+	private TestRestTemplate restTemplate;
+
+	@Test
+	public void greetingShouldReturnDefaultMessage() throws Exception {
+		assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/kafka/hello",
+				String.class)).contains("hello");
+		System.out.println("*** test passed controller...");
+	}
 }
